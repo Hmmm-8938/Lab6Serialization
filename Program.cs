@@ -51,12 +51,11 @@ namespace Lab6Serialization
             SerializeEvent(e1, event_txt);
             Event e2 = (DeserializeEvent(event_txt, e1));
 
-            foreach (Event JSON in eventListJSON)
+            foreach (Event json in eventListJSON)
             {
-                Event j = new Event();
-                SerializeJSON(j, event_json, index);
-                j = (DeserializeJSON(event_json));
-                Console.WriteLine(j);
+                SerializeJSON(json, event_json, index);
+                Event jDeserialized = (DeserializeJSON(event_json));
+                Console.WriteLine($"{jDeserialized}\n");
             }
             
 
@@ -69,10 +68,10 @@ namespace Lab6Serialization
                               $"\n{e2.EventNumber}" +
                               $"\n{e2.Location}" +
                               $"\nTech Competition" +
-                              $"\nIn Word: {event_json}" +
-                              $"\nThe First Character is: {event_json}" +
-                              $"\nThe Middle Character is: {event_json}" +
-                              $"\nThe Last Character is: {event_json}");
+                              $"\nIn Word: {s2}" +
+                              $"\nThe First Character is: {s2[0]}" +
+                              $"\nThe Middle Character is: {s2[4]}" +
+                              $"\nThe Last Character is: {s2[8]}");
             Console.ReadKey();
         }
 
@@ -97,7 +96,7 @@ namespace Lab6Serialization
                 // deserialize the txt file and cast it into a Event object
                 // return type of Deserialize is Object Class.
                 e1 = (Event)binaryFormatter.Deserialize(fs);
-                Console.WriteLine(e1);
+                Console.WriteLine($"{e1}\n");
             }
             return e1;
         }
@@ -105,24 +104,22 @@ namespace Lab6Serialization
         // Using JSON for Serialization
         private static void SerializeJSON(Event j, string path, int index)
         {
-            
-            string stringJSON = JsonSerializer.Serialize(j);
             if (index == 0)
             {
+                string stringJSON = JsonSerializer.Serialize(j);
                 File.WriteAllText(path, stringJSON);
                 index += 1;
             }
             else
             {
+                string stringJSON = JsonSerializer.Serialize(j);
                 File.AppendAllText(path, stringJSON);
             }
-            Console.WriteLine("JSON serialization done");
         }
 
         private static Event DeserializeJSON(string path)
         {
             Event j = JsonSerializer.Deserialize<Event>(File.ReadAllText(path));
-            Console.WriteLine("Deserializing using JSON");
             return j;
         }
 
@@ -131,6 +128,7 @@ namespace Lab6Serialization
             string line = "";
             using (StreamReader sr = new StreamReader(path))
             {
+                line = sr.ReadLine();
                 return line;
             }
         }
