@@ -3,16 +3,21 @@ using System.Text.Json;
 
 namespace Lab6Serialization
 {
+    // Program class the main code that is run...
     public class Program
     {
+        // Main Method
         static void Main(string[] args)
         {
+            // Disables a warning that was causing problems with Binary Serialization
             #pragma warning disable SYSLIB0011
+
+            // Definitions of the Various File Paths Used in this project
             string event_txt = ($"{(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName)}\\event.txt");
             string text_txt = ($"{(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName)}\\text.txt");
             string event_json = ($"{(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName)}\\event.json");
-            int index = 0;
 
+            // Defining the various events that are used in this program
             Event e1 = new Event()
             {
                 EventNumber = 1,
@@ -39,30 +44,41 @@ namespace Lab6Serialization
                 Location = "Hogwarts"
             };
 
+            // Defining a List of type Event (Object) and adding the events for JSON Serialization to the list
             List<Event> eventListJSON = new List<Event>();
             eventListJSON.Add(j1);
             eventListJSON.Add(j2);
             eventListJSON.Add(j3);
             eventListJSON.Add(j4);
 
+            // Defining the string Hackathon for use with Writing to text.txt
             string s1 = "Hackathon";
 
-            // Using Binary Formatter
+            /* Serializing and Deserializing the event e1
+             * and storing in e2 to ensure it is a separate
+             * event that is being printed out to the console
+             */
             SerializeEvent(e1, event_txt);
             Event e2 = (DeserializeEvent(event_txt, e1));
+            Console.WriteLine(e2);
 
+            // Will run the Serialization and deserialization of all the events in eventListJSON which was definied above.
             foreach (Event json in eventListJSON)
             {
-                SerializeJSON(json, event_json, index);
+                SerializeJSON(json, event_json);
                 Event jDeserialized = (DeserializeJSON(event_json));
                 Console.WriteLine($"{jDeserialized}\n");
             }
             
-
+            // Will write the string containing "Hackathon" to a text file 
             WriteToFile(s1, text_txt);
+            /* Will read the work "Hackathon" from the text.txt file and 
+             * then convert the string to uppercase as it was bugging me 
+             * that it looked different when printed on separate lines 
+             * on the lab documentation */
             string s2 = (ReadFromFile(text_txt).ToUpper());
             
-
+            // Prints a string which contains the expected program output after reading in the stuff from text.txt
             Console.WriteLine($"\nExpected Program Output:" +
                               $"\n************************" +
                               $"\n{e2.EventNumber}" +
@@ -72,9 +88,12 @@ namespace Lab6Serialization
                               $"\nThe First Character is: {s2[0]}" +
                               $"\nThe Middle Character is: {s2[4]}" +
                               $"\nThe Last Character is: {s2[8]}");
-            Console.ReadKey();
         }
 
+        // METHODS
+        
+
+        
         // Create a bin file to serialize the object
         public static void SerializeEvent(Event s, string path)
         {
@@ -96,33 +115,34 @@ namespace Lab6Serialization
                 // deserialize the txt file and cast it into a Event object
                 // return type of Deserialize is Object Class.
                 e1 = (Event)binaryFormatter.Deserialize(fs);
-                Console.WriteLine($"{e1}\n");
             }
             return e1;
         }
 
-        // Using JSON for Serialization
-        private static void SerializeJSON(Event j, string path, int index)
+        // Serialization JSON
+        private static void SerializeJSON(Event j, string path)
         {
-            if (index == 0)
-            {
-                string stringJSON = JsonSerializer.Serialize(j);
-                File.WriteAllText(path, stringJSON);
-                index += 1;
-            }
-            else
-            {
-                string stringJSON = JsonSerializer.Serialize(j);
-                File.AppendAllText(path, stringJSON);
-            }
+            string stringJSON = JsonSerializer.Serialize(j);
+            File.WriteAllText(path, stringJSON);
         }
 
+        // Deserializing JSON
         private static Event DeserializeJSON(string path)
         {
             Event j = JsonSerializer.Deserialize<Event>(File.ReadAllText(path));
             return j;
         }
 
+        // Writing to a file
+        public static void WriteToFile(string s1, string path)
+        {
+            using (StreamWriter sw = new StreamWriter(path))
+            {
+                sw.WriteLine(s1);
+            }
+        }
+
+        // Reading from a file
         public static string ReadFromFile(string path)
         {
             string line = "";
@@ -130,14 +150,6 @@ namespace Lab6Serialization
             {
                 line = sr.ReadLine();
                 return line;
-            }
-        }
-
-        public static void WriteToFile(string s1, string path)
-        {
-            using (StreamWriter sw = new StreamWriter(path))
-            {
-                sw.WriteLine(s1);
             }
         }
     }
