@@ -60,34 +60,35 @@ namespace Lab6Serialization
              */
             SerializeEvent(e1, event_txt);
             Event e2 = (DeserializeEvent(event_txt, e1));
-            Console.WriteLine(e2);
 
+            // Will write the string containing "Hackathon" to a text file 
+            WriteToFile(s1, text_txt);
+
+            // Prints a string which contains the expected program output after reading in the stuff from text.txt
+
+            List<Char> readFromFilelist = new List<Char>();
             // Will run the Serialization and deserialization of all the events in eventListJSON which was definied above.
+            List<Event> jDeserialization = new List<Event>();
+            Event jDeserialized = new Event();
             foreach (Event json in eventListJSON)
             {
                 SerializeJSON(json, event_json);
-                Event jDeserialized = (DeserializeJSON(event_json));
-                Console.WriteLine($"{jDeserialized}\n");
+                jDeserialization.Add(jDeserialized = (DeserializeJSON(event_json)));
             }
-            
-            // Will write the string containing "Hackathon" to a text file 
-            WriteToFile(s1, text_txt);
-            /* Will read the work "Hackathon" from the text.txt file and 
-             * then convert the string to uppercase as it was bugging me 
-             * that it looked different when printed on separate lines 
-             * on the lab documentation */
-            string s2 = (ReadFromFile(text_txt).ToUpper());
-            
-            // Prints a string which contains the expected program output after reading in the stuff from text.txt
-            Console.WriteLine($"\nExpected Program Output:" +
+            readFromFilelist = ReadFromFile(text_txt);
+            Console.WriteLine($"Expected Program Output:" +
                               $"\n************************" +
                               $"\n{e2.EventNumber}" +
                               $"\n{e2.Location}" +
                               $"\nTech Competition" +
-                              $"\nIn Word: {s2}" +
-                              $"\nThe First Character is: {s2[0]}" +
-                              $"\nThe Middle Character is: {s2[4]}" +
-                              $"\nThe Last Character is: {s2[8]}");
+                              $"\n{jDeserialization[0].EventNumber} {jDeserialization[0].Location}" +
+                              $"\n{jDeserialization[1].EventNumber} {jDeserialization[1].Location}" +
+                              $"\n{jDeserialization[2].EventNumber} {jDeserialization[2].Location}" +
+                              $"\n{jDeserialization[3].EventNumber} {jDeserialization[3].Location}" +
+                              $"\nIn Word: {s1}" +
+                              $"\nThe First Character is: {readFromFilelist[0]}" +
+                              $"\nThe Middle Character is: {readFromFilelist[1]}" +
+                              $"\nThe Last Character is: {readFromFilelist[2]}");
         }
 
         // METHODS
@@ -142,14 +143,28 @@ namespace Lab6Serialization
             }
         }
 
-        // Reading from a file
-        public static string ReadFromFile(string path)
+        // Reading from a file using the FileStream Reader and Seek Method
+        public static List<Char> ReadFromFile(string path)
         {
-            string line = "";
-            using (StreamReader sr = new StreamReader(path))
+            List<Char> list = new List<Char>();
+            long offset;
+            int nextByte;
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                line = sr.ReadLine();
-                return line;
+                for (offset = 1; offset <= fs.Length; offset++)
+                {
+                    
+                }
+                fs.Seek(0, SeekOrigin.Begin);
+                char byte1 = ((char)fs.ReadByte());
+                fs.Seek(4, SeekOrigin.Begin);
+                char byte2 = ((char)fs.ReadByte());
+                fs.Seek(8, SeekOrigin.Begin);
+                char byte3 = ((char)fs.ReadByte());
+                list.Add(byte1);
+                list.Add(byte2);
+                list.Add(byte3);
+                return list;
             }
         }
     }
